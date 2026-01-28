@@ -11,9 +11,17 @@ render_cup = false;
 render_support = false;
 render_cavity = false;
 render_partitioned_cavity = false;
+render_grid_block = false;
+render_sliding_lid = true;
+render_sliding_lid_support = true;
+render_sliding_lid_cavity = true;
 
 cup_position = [0,0];
-partitioned_cavity_position = [0,0];
+partitioned_cavity_position = [0,0,0];
+grid_block_position = [0,0,0];
+sliding_lid_position = [0,0,0];
+sliding_lid_support_position = [0,0,0];
+sliding_lid_cavity_position = [0,0,0];
 
 $fn = 64;
 echo("debug_gridfinity_sliding_lid is enabled");
@@ -33,7 +41,7 @@ debug_settings = SlidingLidSettings(
   slidingMinSupport = 0.8,
   slidingClearance = d_clearance,
   wallThickness = d_wall_thickness,
-  slidingLidLipEnabled = false
+  slidingLidLipEnabled = true
 );
 
 if (debug_target == "Lid") {
@@ -74,15 +82,16 @@ if (debug_target == "Lid") {
     innerWallRadius = mock_inner_radius,
     zpoint = mock_zpoint
   );
-} else if (debug_target == "Cavity") {
-  mock_above_lid_height = 5;
-  
+} 
+if (render_sliding_lid_cavity) {
+  above_lid_height = 0;
+  translate(sliding_lid_cavity_position)
   SlidingLidCavity(
     num_x = d_num_x, 
     num_y = d_num_y,
     wall_thickness = d_wall_thickness,
     sliding_lid_settings = debug_settings,
-    aboveLidHeight = mock_above_lid_height
+    aboveLidHeight = above_lid_height
   );
 } 
 if (render_cup) {
@@ -100,7 +109,8 @@ if (render_cup) {
     sliding_clearance = d_clearance,
     lip_settings = LipSettings(
         lipNotch = true,
-        lip_style="normal")
+        lip_style="normal"),
+    filled_in = "disabled"
   );
 }
 if (render_partitioned_cavity) {
@@ -119,6 +129,24 @@ if (render_partitioned_cavity) {
       wall_thickness = d_wall_thickness,
       cupBase_settings = d_cupBase_settings,
       sliding_lid_settings = debug_settings,
+      lip_settings = LipSettings(lipNotch = false, lipStyle="reduced"),
+      calculated_vertical_separator_positions = [],
+      calculated_horizontal_separator_positions = [],
+      finger_slide_settings = FingerSlideSettings(
+          type = "none",
+          radius = 10,
+          walls = [0,0,0,0],
+          lip_aligned = true),
+      label_settings = LabelSettings(labelStyle="disabled")
+    );
+  if (render_grid_block){
+    translate(grid_block_position)
+    grid_block(
+      num_x = d_num_x,
+      num_y = d_num_y,
+      num_z = 3,
+      wall_thickness = d_wall_thickness,
+      sliding_lid_settings = debug_settings,
       lip_settings = LipSettings(lipNotch = true, lipStyle="normal"),
       calculated_vertical_separator_positions = [],
       calculated_horizontal_separator_positions = [],
@@ -129,4 +157,5 @@ if (render_partitioned_cavity) {
           lip_aligned = true),
       label_settings = LabelSettings(labelStyle="disabled")
     );
+  }
 }

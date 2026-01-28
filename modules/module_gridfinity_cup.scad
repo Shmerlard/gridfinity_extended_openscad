@@ -1108,7 +1108,8 @@ module partitioned_cavity(num_x, num_y, num_z,
       wall_thickness=wall_thickness,
       lip_settings=lip_settings, 
       sliding_lid_settings=sliding_lid_settings, 
-      headroom=headroom);
+      headroom=headroom,
+      extra_height=sliding_lid_settings[iSlidingLidEnabled] ? 10 : 0 );
     }
     
     if(env_help_enabled("trace")) echo("partitioned_cavity", vertical_separator_positions=calculated_vertical_separator_positions);
@@ -1154,7 +1155,8 @@ module basic_cavity(num_x, num_y, num_z,
     cupBase_settings = [],
     sliding_lid_settings = [],
     divider_wall_removable_settings = [],
-    headroom = 0) {
+    headroom = 0,
+    extra_height = 0) {
 
   //Legacy variables
   floor_thickness=cupBase_settings[iCupBase_FloorThickness]; 
@@ -1225,7 +1227,7 @@ module basic_cavity(num_x, num_y, num_z,
 
   
   if(env_help_enabled("trace")) echo("basic_cavity", gf_cup_corner_radius=env_corner_radius(),wall_thickness=wall_thickness, env_clearance=env_clearance(), inner_corner_center=inner_corner_center, innerWallRadius=innerWallRadius, innerLipRadius=innerLipRadius);
-  aboveLidHeight =  sliding_lid_settings[iSlidingLidThickness] + lipHeight;
+  aboveLidHeight =  sliding_lid_settings[iSlidingLidThickness] + lipHeight + extra_height;
   
   //cavityHeight= max(lipBottomZ-floorht,0);
   cavityHeight= max(lipBottomZ-floorht,0);
